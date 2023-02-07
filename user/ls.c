@@ -2,7 +2,7 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 #include "kernel/fs.h"
-
+//获取最后一个/后的名字，并补空格
 char*
 fmtname(char *path)
 {
@@ -29,12 +29,12 @@ ls(char *path)
   int fd;
   struct dirent de;
   struct stat st;
-
+  //0 represent read-only,打开该路径，获取文件描述符
   if((fd = open(path, 0)) < 0){
     fprintf(2, "ls: cannot open %s\n", path);
     return;
   }
-
+  //st defined in kernel/stat.h
   if(fstat(fd, &st) < 0){
     fprintf(2, "ls: cannot stat %s\n", path);
     close(fd);
@@ -42,10 +42,11 @@ ls(char *path)
   }
 
   switch(st.type){
+  //file
   case T_FILE:
     printf("%s %d %d %l\n", fmtname(path), st.type, st.ino, st.size);
     break;
-
+  //dir
   case T_DIR:
     if(strlen(path) + 1 + DIRSIZ + 1 > sizeof buf){
       printf("ls: path too long\n");
@@ -54,6 +55,7 @@ ls(char *path)
     strcpy(buf, path);
     p = buf+strlen(buf);
     *p++ = '/';
+    //接下来一一读取文件夹下的文件，拼接到p后面
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
       if(de.inum == 0)
         continue;
