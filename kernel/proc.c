@@ -21,6 +21,21 @@ static void freeproc(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
 
+int
+n_proc()
+{
+  struct proc *p;
+  int n = 0;
+  
+  for(p = proc;p<&proc[NPROC];p++)
+  {
+     acquire(&p->lock);
+     if(p->state!=UNUSED)n++;
+     release(&p->lock);
+  }
+  return n;
+}
+
 // initialize the proc table at boot time.
 void
 procinit(void)
@@ -274,7 +289,7 @@ fork(void)
     return -1;
   }
   np->sz = p->sz;
-
+  np->mask = p->mask;
   np->parent = p;
 
   // copy saved user registers.

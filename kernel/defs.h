@@ -58,7 +58,7 @@ void            itrunc(struct inode*);
 void            ramdiskinit(void);
 void            ramdiskintr(void);
 void            ramdiskrw(struct buf*);
-
+uint64          free_mem(void);
 // kalloc.c
 void*           kalloc(void);
 void            kfree(void *);
@@ -82,6 +82,7 @@ void            panic(char*) __attribute__((noreturn));
 void            printfinit(void);
 
 // proc.c
+int             n_proc(void);
 int             cpuid(void);
 void            exit(int);
 int             fork(void);
